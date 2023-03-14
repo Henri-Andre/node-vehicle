@@ -10,8 +10,14 @@ import { where } from "sequelize";
 
 const create  = async ({name, first_name, email, password, image}) => {
   try {
-    const user = await User.create({ name, first_name, email, password, image });
-    return user.toJSON();
+
+    const user = await User.create({ 
+                                      name, 
+                                      first_name,
+                                      email, 
+                                      password, 
+                                      image 
+                                    });
   } catch (err) {
     console.error(`Error creating user: ${err.message}`);
     return null;
@@ -20,10 +26,14 @@ const create  = async ({name, first_name, email, password, image}) => {
 
 const readByEmail = async (email) => {
   try {
-    const user = await User.findOne(email);
-    return user;
+      const user = await User.findOne(
+      {
+        where:  {email:email}
+      })
+  console.log(user)
+  return user ;
   } catch (e) {
-    logError(`user.dao - readByEmail : ${e.message}`);
+    console.error(`user.dao - readByEmail : ${e.message}`);
     return null;
   }
 };
@@ -38,18 +48,44 @@ const readAll = async () => {
   }
 };
 
+const updateUser = async ({ id, name, first_name, email, password, image }) => {
+  try {
+    const user = await User.findByIdAndUpdate(id, { 
+      name, 
+      first_name,
+      email, 
+      password, 
+      image 
+    }, { new: true });
+    return user;
+  } catch (err) {
+    console.error(`Error updating user: ${err.message}`);
+    return null;
+  }
+};
+
+
+const deleteUser = (id)=>{
+  User.findByPk(id)
+      .then(user => {
+          user.destroy()
+      })
+}
+
 const readById = async (userId) => {
   try {
     const user = await User.findByPk(userId);
     return user
   } catch (e) {
-    logError(`user.dao - readById : ${e.message}`);
+    console.error();(`${e.message}`);
     return null;
   }
 };
 
 export const UserDAO = {
   create: create,
+  updateUser,
+  deleteUser,
   readByEmail,
   readAll,
   readById,
