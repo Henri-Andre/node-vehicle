@@ -8,7 +8,7 @@ import { where } from "sequelize";
 // import fs from "fs";
 // const { appendFile } = fs;
 
-const create  = async ({name, first_name, email, password, image}) => {
+const create  = async ({name, first_name, email, password, image, role_id}) => {
   try {
 
     const user = await User.create({ 
@@ -16,7 +16,8 @@ const create  = async ({name, first_name, email, password, image}) => {
                                       first_name,
                                       email, 
                                       password, 
-                                      image 
+                                      image,
+                                      role_id : 1 
                                     });
   } catch (err) {
     console.error(`Error creating user: ${err.message}`);
@@ -48,15 +49,16 @@ const readAll = async () => {
   }
 };
 
-const updateUser = async ({ id, name, first_name, email, password, image }) => {
+const updateUser = async ({ id, name, first_name, email, password, image,  }) => {
   try {
-    const user = await User.findByIdAndUpdate(id, { 
-      name, 
-      first_name,
-      email, 
-      password, 
-      image 
-    }, { new: true });
+    const user = await User.findByPk(id)
+    await user.update({
+                       name, 
+                       first_name,
+                       email, 
+                       password,
+                       image 
+    });
     return user;
   } catch (err) {
     console.error(`Error updating user: ${err.message}`);

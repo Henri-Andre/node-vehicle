@@ -1,6 +1,7 @@
 import { USER_ROLE } from "../constante/user.constants.js";
 import { DataTypes } from "sequelize";
 import connexion from "../config/database.config.js";
+import User from "./model_user.js";
 
 
 const Roles = connexion.db.define('Roles',{
@@ -15,6 +16,12 @@ const Roles = connexion.db.define('Roles',{
         alloNull : false
     }
 });
+
+
+User.belongsTo(Roles, { foreignKey: 'role_id' });
+
+
+
 
 // Roles.bulkCreate(USER_ROLE)
 //   .then(() => {

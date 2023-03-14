@@ -19,7 +19,7 @@ const signUp = async (req, res) => {
                                         first_name, 
                                         email, 
                                         password :pw, 
-                                        image 
+                                        image
                                       });
     if(response){
      return res.status(403).json({message: response })
@@ -37,11 +37,11 @@ const signUp = async (req, res) => {
     }
                                    
                                    
-    const token = jwtSign(response)
-    console.log(`token_signUp:${token}`)
-                                   
-    res.status(201).json({message:`user_created`, data : response , token})
-    }
+    const token = jwtSign(user);
+    console.log(`token_updateUser: ${token}`);
+  
+    res.json({ message: 'User updated', data: user, token });
+  };
 
 
 
@@ -71,43 +71,39 @@ const signIn = async (req, res) => {
 
 
   //modifier un user
-  const update = async (req,res)=> {
-    const {name, first_name, email, password, image} = req.body;
-    const id = req.params.id;
-    if(!stringIsFilled(email)|| !stringIsFilled(password)){
-        res.status(404).json({message:`email or password incorrect`})
-    }
-    
-    const pw = await bcrypt.hash(password, 10)
-    const response = await UserDAO.updateUser({
+  const update = async (req, res) => {
+    const { id } = req.params;
+    const { name, first_name, email, password, image } = req.body;
+
+    const pw = await  bcrypt.hash(password, 10)
+    const user = await UserDAO.updateUser({ id,
                                             name, 
                                             first_name, 
                                             email, 
-                                            password: pw, 
-                                            image
-     });
-
-    if(response){
-       return res.status(403).json({message: response })
-     }
-                                       
-    const validate_email = emailIsValid(email)
-    const validate_password = passwordIsValid(password)
-                                                                          
-    if(!validate_email){
-     return res.status(400).json({message:`l'email ne contient pas les element requis`})
+                                            password : pw, 
+                                            image 
+                                          });
+  
+    if (!user) {
+      return res.status(404).json({ message: `User with id ${id} not found` });
     }
-                                       
-    if(!validate_password){
-           return res.status(400).json({message:`le password ne contient pas les element requis`})
+  
+    const validate_email = emailIsValid(email);
+    const validate_password = passwordIsValid(password);
+  
+    if (!validate_email) {
+      return res.status(400).json({ message: `Email is invalid` });
     }
-                                                                          
-                                                                          
-     const token = jwtSign(response)
-     console.log(`token_signUp:${token}`)
-                                                                          
-     res.status(201).json({message:`user_update ${name}`, token})
- }
+  
+    if (!validate_password) {
+      return res.status(400).json({ message: `Password is invalid` });
+    }
+  
+    const token = jwtSign(user);
+    console.log(`token_updateUser: ${token}`);
+  
+    res.json({ message: 'User updated', data: user, token });
+  };
                                        
 
 
