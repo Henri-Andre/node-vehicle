@@ -8,4 +8,5 @@ export const REGEX = {
   
   export const regexIsOk = (regex, value) => regex.test(value);
   export const emailIsValid = (email) => regexIsOk(REGEX.email, email);
+  export const passwordIsValid = (password) => regexIsOk(REGEX.password, password)
   

@@ -1,23 +1,13 @@
 
 import { ERRORS } from "../utils/errors.utils.js";
 import { emailIsValid } from "../utils/regex.utils.js";
-import { Sequelize, DataTypes } from 'sequelize';
-import initDb from '../config/database.config.js';
+import { DataTypes } from 'sequelize';
+import connexion from "../config/database.config.js";
 
 
-
-const sequelize = new Sequelize(process.env.MARIADB_URI || 'mariadb://root@localhost:3306/popcars');
-
-sequelize.sync({ 
-    //force: false
- }).then(() => {
-    console.log('User table created');
-  }).catch((err) => {
-    console.log(err);
-  });
   
 
-const User = sequelize.define('User', {
+const User = connexion.db.define('User', {
     id : {
         type : DataTypes.INTEGER,
         primaryKey: true,
@@ -50,6 +40,11 @@ const User = sequelize.define('User', {
         type : DataTypes.STRING(255),
         allowNull: false
     }
+},
+{
+    timestamps:true,
+    createdAt:'created',
+    updatedAt:'updated'
 });
 
 

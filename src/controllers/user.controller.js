@@ -2,49 +2,127 @@ import { UserDAO } from "../daos/user.dao.js";
 import { jwtSign } from "../utils/jwt.utils.js";
 import { stringIsFilled } from "../utils/string.utils.js";
 import { omit, omitMulti } from "../utils/object.utils.js";
+import { emailIsValid, passwordIsValid } from "../utils/regex.utils.js";
+import bcrypt from "bcrypt"
+
+
+
+// S'Inscrire
 
 const signUp = async (req, res) => {
-  const name = req.body.name;
-  const first_name = req.body.first_name;
-  const email = req.body.email;
-  const password = req.body.password;
-  const image = req.body.image;
+  const {name, first_name,email, password, image} = req.body
 
-  try {
-    const user = await UserDAO.create({ name, first_name, email, password, image });
-    const token = jwtSign(user.id);
-    res.status(201).json({ message: "user_created", data: user, token });
-  } catch (e)
-   {
-    console.error(e);
-    if (e.name === 'SequelizeUniqueConstraintError') {
-      return res.status(403).json({ message: `email_already_exist` });
+
+    const pw = await  bcrypt.hash(password, 10)
+    const response = await UserDAO.create({ 
+                                        name, 
+                                        first_name, 
+                                        email, 
+                                        password :pw, 
+                                        image 
+                                      });
+    if(response){
+     return res.status(403).json({message: response })
     }
-    res.status(500).json({ message: "internal_server_error" });
-  }
-};
+
+    const validate_email = emailIsValid(email)
+    const validate_password = passwordIsValid(password)
+                                   
+    if(!validate_email){
+      return res.status(400).json({message:`l'email ne contient pas les element requis`})
+    }
+
+    if(!validate_password){
+       return res.status(400).json({message:`le password ne contient pas les element requis`})
+    }
+                                   
+                                   
+    const token = jwtSign(response)
+    console.log(`token_signUp:${token}`)
+                                   
+    res.status(201).json({message:`user_created`, data : response , token})
+    }
+
+
+
+// Se Connecter  
+                                   
 
 const signIn = async (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  const {email,password} = req.body;
 
   if (!stringIsFilled(email) || !stringIsFilled(password)) {
     return res.status(404).json({ message: "email or password is not correct" });
   }
 
-  try {
-    const user = await UserDAO.readByEmail({ where: { email: email } });
-    if (user && user.password === password) {
-      const token = jwtSign(user.id);
-      res.status(200).json({ message: "ok", data: user , token });
-    } else {
-      res.status(401).json({ message: "login_failed" });
-    }
-  } catch (e) {
-    res.status(500).json({ message: "internal_server_error" });
-  }
+  const user = await UserDAO.readByEmail(email);
+      console.log(user)
+      const passWordIsOk = await bcrypt.compare(password, user?.dataValues?.password)
+
+
+      if(passWordIsOk){
+          const token = jwtSign(user.id);
+          console.log(token)
+         return res.status(200).json({message:`ok`,data : user,token})
+      }else{
+         return res.status(401).json({message:`login_failed`})
+      }
 };
 
+
+  //modifier un user
+  const update = async (req,res)=> {
+    const {name, first_name, email, password, image} = req.body;
+    const id = req.params.id;
+    if(!stringIsFilled(email)|| !stringIsFilled(password)){
+        res.status(404).json({message:`email or password incorrect`})
+    }
+    
+    const pw = await bcrypt.hash(password, 10)
+    const response = await UserDAO.updateUser({
+                                            name, 
+                                            first_name, 
+                                            email, 
+                                            password: pw, 
+                                            image
+     });
+
+    if(response){
+       return res.status(403).json({message: response })
+     }
+                                       
+    const validate_email = emailIsValid(email)
+    const validate_password = passwordIsValid(password)
+                                                                          
+    if(!validate_email){
+     return res.status(400).json({message:`l'email ne contient pas les element requis`})
+    }
+                                       
+    if(!validate_password){
+           return res.status(400).json({message:`le password ne contient pas les element requis`})
+    }
+                                                                          
+                                                                          
+     const token = jwtSign(response)
+     console.log(`token_signUp:${token}`)
+                                                                          
+     res.status(201).json({message:`user_update ${name}`, token})
+ }
+                                       
+
+
+
+// supprimer un user
+const dltUser = async (req,res)=>{
+    const id = req.params.id
+    const user = await UserDAO.deleteUser(id)
+    if(!user){
+        res.status(404).json({message:`User ${id} is delete`})
+    }
+}
+
+
+// All user
 const read = async (req, res) => {
   try {
     const users = await UserDAO.readAll();
@@ -54,6 +132,8 @@ const read = async (req, res) => {
   }
 };
 
+
+// User By ID
 const getUserInfos = async (req, res) => {
   const { userId } = req.body;
 
@@ -68,6 +148,8 @@ const getUserInfos = async (req, res) => {
 
 export const UserController = {
   signUp,
+  update,
+  dltUser,
   read,
   signIn,
   getUserInfos,

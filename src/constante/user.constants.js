@@ -1,7 +1,8 @@
-export const USER_ROLE = {
-    user : 1,
-    admin: 2,
-    manager : 3,
-  };
+export const USER_ROLE = [
+  
+   {role : 'user'},
+   {role : 'admin'},
+   {role : 'manager'}
+]
   
   

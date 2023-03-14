@@ -1,21 +1,47 @@
-import Sequelize from 'sequelize';
+import { Sequelize } from "sequelize";
+
+class Connection {
+     db = null;
+
+    async connect() {
+        if (!!this.db) {
+            return;
+        } 
+
+        try {
+            this.db = new Sequelize(
+                'popcars',
+                'root',
+                '', 
+                {
+                    //host : '127.0.0.1',
+                    host : 'localhost',
+                    dialect : 'mariadb',
+                    logging : false
+                })
+
+            await this.db.authenticate()
+                .then(_ => console.log('Connexion à la base de données réussie'))
+                .catch(error => console.error('Erreur de synchronisation', error));
+
+   
+            
+
+        } catch (error) {
+            console.error(error)
+        }
+    };
+
+    async sync(){
+    await this.db.sync(
+        // {force:true}
+    )
+
+    }
+}
+
+const connexion = new Connection();
+connexion.connect();
 
 
-// const uri = "mariadb://username:password@localhost:3306/database_name";
-const uri = process.env.MARIADB_URI || 'mariadb://root@localhost:3306/popcars';
-
-const initDb = async () => {
-  try {
-    const sequelize = new Sequelize(uri);
-    await sequelize.authenticate();
-    console.log('Database connected');
-  } catch (e) {
-    console.error('oh oh problem:', e);
-  }
-
-
-
-};
-
-
-export default initDb;
+export default connexion; 
