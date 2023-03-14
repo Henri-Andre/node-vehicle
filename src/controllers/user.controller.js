@@ -37,10 +37,10 @@ const signUp = async (req, res) => {
     }
                                    
                                    
-    const token = jwtSign(user);
+    const token = jwtSign(response);
     console.log(`token_updateUser: ${token}`);
   
-    res.json({ message: 'User updated', data: user, token });
+    res.json({ message: 'User updated', data: response, token });
   };
 
 

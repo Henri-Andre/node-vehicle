@@ -14,7 +14,6 @@ class Connection {
                 'root',
                 '', 
                 {
-                    //host : '127.0.0.1',
                     host : 'localhost',
                     dialect : 'mariadb',
                     logging : false
@@ -34,7 +33,7 @@ class Connection {
 
     async sync(){
     await this.db.sync(
-        // {force:true}
+       //{force:true}
     )
 
     }

@@ -3,8 +3,15 @@ import initRoutes from "./routes/router.js";
 import { log } from "./utils/logger.utils.js";
 import connexion from "./config/database.config.js";
 import initMiddlewares from "./middlewares/init.js";
-import Fuels from "./models/model_fuels.js";
+import User from "./models/model_user.js";
 import Roles from "./models/model_role.js";
+import Vehicles from "./models/model_vehicles.js";
+import Fuels from "./models/model_fuels.js";
+import Types from "./models/model_types.js";
+import Videos from "./models/model_videos.js";
+
+
+
 
 
 const app = express();
@@ -29,6 +36,9 @@ app.listen(port, ()=>{
 console.log(`serveur en cours d'éxécution dans le port ${port}`)
 
 })
+
+
+
 
 
 /* TODO: 

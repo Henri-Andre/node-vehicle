@@ -15,8 +15,12 @@ const Roles = connexion.db.define('Roles',{
         type : DataTypes.STRING(255),
         alloNull : false
     }
+},
+{
+    timestamps:false,
+    createdAt:'created',
+    updatedAt:'updated'
 });
-
 
 User.belongsTo(Roles, { foreignKey: 'role_id' });
 
