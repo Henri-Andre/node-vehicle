@@ -1,20 +1,36 @@
-import Videos from "../models/model_videos";
+import Videos from "../models/model_videos.js";
 
-const createVideo  = async ({name,typeofvideo, date}) => {
-    try {
+
+
+
+const create  = async ({name , typeofvideo, date }) => {
+  try {
+
+    const video = await Videos.create({ 
+                                    name , 
+                                    typeofvideo, 
+                                    date 
+                                    });
+    return video;
+  } catch (err) {
+    console.error(`Error creating video: ${err.message}`);
+    return null;
+  }
+};
+
+
+const dlt = (id)=>{
+    Videos.findByPk(id)
+        .then(video => {
+            video.destroy()
+        })
+  }
   
-      const user = await Videos.create({
-                                       name,  
-                                       typeofvideo,
-                                       date
-                                      });
-    } catch (err) {
-      console.error(`Error creating user: ${err.message}`);
-      return null;
-    }
-  };
 
 
-  export const VideoDAO = {
-    createVideo
-  };
+
+export const VideosDAO = {
+  create: create,
+  dlt
+};
+

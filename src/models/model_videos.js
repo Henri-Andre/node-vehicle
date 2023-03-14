@@ -20,8 +20,11 @@ const Videos = connexion.db.define('Videos',{
         alloNull : false
     },
     date : {
-        type : DataTypes.DATE,
-        alloNull: false
+        type : DataTypes.DATEONLY,
+        alloNull: false,
+        validate: {
+            isDate: true
+          }
     }
 },
 {
