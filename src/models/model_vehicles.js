@@ -31,6 +31,10 @@ const Vehicles = connexion.db.define('Vehicles', {
     price : {
         type : DataTypes.INTEGER,
         alloNull : false
+    },
+    active : {
+        type : DataTypes.BOOLEAN,
+        alloNull: false
     }
 
 

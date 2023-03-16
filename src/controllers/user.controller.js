@@ -10,39 +10,55 @@ import bcrypt from "bcrypt"
 // S'Inscrire
 
 const signUp = async (req, res) => {
-  const {name, first_name,email, password, image} = req.body
+  try {
+    const { name, first_name, email, password, image } = req.body;
 
-
-    const pw = await  bcrypt.hash(password, 10)
-    const response = await UserDAO.create({ 
-                                        name, 
-                                        first_name, 
-                                        email, 
-                                        password :pw, 
-                                        image
-                                      });
-    if(response){
-     return res.status(403).json({message: response })
+    if (!name || !first_name || !email || !password) {
+      return res.status(400).json({ message: 'Request is not complete' });
     }
 
-    const validate_email = emailIsValid(email)
-    const validate_password = passwordIsValid(password)
-                                   
-    if(!validate_email){
-      return res.status(400).json({message:`l'email ne contient pas les element requis`})
-    }
+    
 
-    if(!validate_password){
-       return res.status(400).json({message:`le password ne contient pas les element requis`})
-    }
-                                   
-                                   
-    const token = jwtSign(response);
-    console.log(`token_updateUser: ${token}`);
+    const pw = await bcrypt.hash(password, 10);
+    const user = await UserDAO.create({
+      name,
+      first_name,
+      email,
+      password: pw,
+      image: image || 'image.png',
+    });
+
   
-    res.json({ message: 'User updated', data: response, token });
-  };
 
+
+    if (user) {
+      return res.status(403).json({ message: user });
+    }
+
+    const validate_email = emailIsValid(email);
+    const validate_password = passwordIsValid(password);
+
+    if (!validate_email) {
+      return res
+        .status(400)
+        .json({ message: `The email does not contain the required elements` });
+    }
+
+    if (!validate_password) {
+      return res
+        .status(400)
+        .json({ message: `The password does not contain the required elements` });
+    }
+
+    const token = jwtSign(user);
+    console.log(`token_updateUser: ${token}`);
+
+    res.json({ message: 'An account already exists with this email' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 
 // Se Connecter  

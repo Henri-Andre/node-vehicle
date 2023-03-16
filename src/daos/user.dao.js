@@ -4,12 +4,16 @@ import { getErrors } from "../utils/errors.utils.js";
 import { getCurrentDate } from "../utils/date.utils.js";
 import { formatUser, formatUsers } from "../utils/user.utils.js";
 import { where } from "sequelize";
+import Roles from "../models/model_role.js";
 
 // import fs from "fs";
 // const { appendFile } = fs;
 
-const create  = async ({name, first_name, email, password, image, role_id}) => {
+const create  = async ({name, first_name, email, password, image}) => {
   try {
+
+ 
+
 
     const user = await User.create({ 
                                       name, 
@@ -19,6 +23,7 @@ const create  = async ({name, first_name, email, password, image, role_id}) => {
                                       image,
                                       role_id : 1 
                                     });
+    return user
   } catch (err) {
     console.error(`Error creating user: ${err.message}`);
     return null;
@@ -29,19 +34,26 @@ const readByEmail = async (email) => {
   try {
       const user = await User.findOne(
       {
-        where:  {email:email}
-      })
-  console.log(user)
+        where:  {email:email},
+        include : [
+          { model : Roles },
+      ]
+      });
+ 
   return user ;
   } catch (e) {
-    console.error(`user.dao - readByEmail : ${e.message}`);
+    console.error(`user.dao - readByEmail : ${e.message}`); 
     return null;
   }
 };
 
 const readAll = async () => {
   try {
-    const users = await User.findAll();
+    const users = await User.findAll({
+      include : [
+        { model : Roles}
+      ]
+    });
     return users
   } catch (err) {
     console.error(`Error finding all users: ${err.message}`);

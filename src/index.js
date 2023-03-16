@@ -9,6 +9,7 @@ import Vehicles from "./models/model_vehicles.js";
 import Fuels from "./models/model_fuels.js";
 import Types from "./models/model_types.js";
 import Videos from "./models/model_videos.js";
+import Comments from "./models/model_comments.js";
 
 
 
