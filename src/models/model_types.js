@@ -1,10 +1,12 @@
 import { DataTypes } from 'sequelize';
-import connexion from "../config/database.config.js";
 import {TYPE_VEHICLE} from '../constante/types.vehicle.constant.js';
+import initDb from '../config/database.config.js';
+
+const db = await initDb() 
 
   
 
-const Types = connexion.db.define('Types', {
+const Types = db.define('Types', {
     id : {
         type : DataTypes.INTEGER,
         primaryKey: true,

@@ -1,10 +1,11 @@
 import { USER_ROLE } from "../constante/user.constants.js";
 import { DataTypes } from "sequelize";
-import connexion from "../config/database.config.js";
-import User from "./model_user.js";
+import initDb from '../config/database.config.js';
+
+const db = await initDb() 
 
 
-const Roles = connexion.db.define('Roles',{
+const Roles = db.define('Roles',{
     id : {
         type : DataTypes.INTEGER,
         primaryKey: true,
@@ -22,7 +23,7 @@ const Roles = connexion.db.define('Roles',{
     updatedAt:'updated'
 });
 
-User.belongsTo(Roles, { foreignKey: 'role_id' });
+
 
 
 

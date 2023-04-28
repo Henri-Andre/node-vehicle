@@ -1,13 +1,12 @@
-import Vehicles from "../models/model_vehicles.js";
 import Fuels from "../models/model_fuels.js";
 import Types from "../models/model_types.js";
-import Videos from "../models/model_videos.js";
+import Vehicles from "../models/model_vehicles.js";
 
 
 
 // Create
 
-const create  = async ({vehicle, image, history, price, active , fuel_id, type_id, video_id}) => {
+const create  = async ({vehicle, image, history, price, active, video , fuel_id, type_id}) => {
     try {
   
       const vehicles = await Vehicles.create({ 
@@ -16,9 +15,10 @@ const create  = async ({vehicle, image, history, price, active , fuel_id, type_i
                                         history, 
                                         price,
                                         active: true, 
+                                        video,
                                         fuel_id,
                                         type_id ,
-                                        video_id
+                                        
                                       });
          return vehicles
     } catch (err) {
@@ -37,11 +37,9 @@ const create  = async ({vehicle, image, history, price, active , fuel_id, type_i
         include : [
             { model : Fuels },
             { model : Types },
-            { model : Videos },
-            { model : Fuels }
 
         ],
-        attributes : ['vehicle' ,'image','history','price','active']
+        attributes : ['id','vehicle' ,'image','history','price','active']
     })
       return vehicles
     } catch (err) {
@@ -61,8 +59,6 @@ const create  = async ({vehicle, image, history, price, active , fuel_id, type_i
         include : [
             { model : Fuels },
             { model : Types },
-            { model : Videos },
-            { model : Fuels}
 
         ],
         attributes : ['id','vehicle' ,'image','history','price','active']
@@ -70,6 +66,24 @@ const create  = async ({vehicle, image, history, price, active , fuel_id, type_i
       return vehicle
     } catch (err) {
       console.error(`Error finding all users: ${err.message}`);
+      return null;
+    }
+  };
+
+
+  const readByTypeId = async (type_id) => {
+    try {
+      const vehicles = await Vehicles.findAll({
+        where: { type_id: type_id },
+        include: [
+          { model: Fuels },
+          { model: Types },
+        ],
+        attributes: ['id', 'vehicle', 'image', 'history', 'price', 'active']
+      });
+      return vehicles;
+    } catch (err) {
+      console.error(`Error finding vehicles by type id: ${err.message}`);
       return null;
     }
   };
@@ -88,5 +102,6 @@ export const VehicleDAO = {
     create,
     readAll,
     readById,
-    dlt
+    dlt,
+    readByTypeId
 }

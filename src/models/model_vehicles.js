@@ -1,15 +1,16 @@
 
 import { DataTypes } from 'sequelize';
-import connexion from "../config/database.config.js";
 import Fuels from './model_fuels.js';
 import Types from './model_types.js';
-import Videos from './model_videos.js';
+import initDb from '../config/database.config.js';
+
+const db = await initDb() 
 
 
 
   
 
-const Vehicles = connexion.db.define('Vehicles', {
+const Vehicles = db.define('Vehicles', {
     id : {
         type : DataTypes.INTEGER,
         primaryKey: true,
@@ -35,6 +36,10 @@ const Vehicles = connexion.db.define('Vehicles', {
     active : {
         type : DataTypes.BOOLEAN,
         alloNull: false
+    },
+    video : {
+        type : DataTypes.STRING(255),
+        alloNull : false
     }
 
 
@@ -52,37 +57,13 @@ Vehicles.belongsTo(Fuels,
     { foreignKey: 'fuel_id' 
 });
 
-
-Fuels.hasMany(Vehicles,
-     
-    { foreignKey: 'fuel_id' 
-
-    });
-
-
-
-
 // Type
 Vehicles.belongsTo(Types, 
     { foreignKey: 'type_id' 
 });
 
-Types.hasMany(Vehicles,
-      { foreignKey: 'type_id' 
-});
 
  
-// Video 
-
-Vehicles.belongsTo(Videos, 
-    { foreignKey: 'video_id' 
-});
-
-Videos.hasMany(Vehicles,
-      { foreignKey: 'video_id' 
-});
-
-    
 
 
 

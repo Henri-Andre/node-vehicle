@@ -1,9 +1,9 @@
+import bcrypt from "bcrypt";
 import { UserDAO } from "../daos/user.dao.js";
 import { jwtSign } from "../utils/jwt.utils.js";
-import { stringIsFilled } from "../utils/string.utils.js";
-import { omit, omitMulti } from "../utils/object.utils.js";
 import { emailIsValid, passwordIsValid } from "../utils/regex.utils.js";
-import bcrypt from "bcrypt"
+import { stringIsFilled } from "../utils/string.utils.js";
+
 
 
 
@@ -11,12 +11,23 @@ import bcrypt from "bcrypt"
 
 const signUp = async (req, res) => {
   try {
-    const { name, first_name, email, password, image } = req.body;
+    const { name, first_name, email, password } = req.body;
 
     if (!name || !first_name || !email || !password) {
       return res.status(400).json({ message: 'Request is not complete' });
     }
 
+   
+    const isEmailValid = emailIsValid(email);
+    const isPasswordValid = passwordIsValid(password);
+
+    if (!isEmailValid || !isPasswordValid) {
+      return res
+        .status(400)
+        .json({ message: `email or password  does not contain the required elements` });
+    } 
+
+    
     
 
     const pw = await bcrypt.hash(password, 10);
@@ -24,34 +35,16 @@ const signUp = async (req, res) => {
       name,
       first_name,
       email,
-      password: pw,
-      image: image || 'image.png',
+      password: pw
     });
-
-  
-
 
     if (user) {
       return res.status(403).json({ message: user });
     }
+   
 
-    const validate_email = emailIsValid(email);
-    const validate_password = passwordIsValid(password);
 
-    if (!validate_email) {
-      return res
-        .status(400)
-        .json({ message: `The email does not contain the required elements` });
-    }
-
-    if (!validate_password) {
-      return res
-        .status(400)
-        .json({ message: `The password does not contain the required elements` });
-    }
-
-    const token = jwtSign(user);
-    console.log(`token_updateUser: ${token}`);
+    
 
     res.json({ message: 'An account already exists with this email' });
   } catch (error) {
@@ -89,30 +82,30 @@ const signIn = async (req, res) => {
   //modifier un user
   const update = async (req, res) => {
     const { id } = req.params;
-    const { name, first_name, email, password, image } = req.body;
+    const { name, first_name, email, password} = req.body;
+
+   
+  
+    
+    const isEmailValid = emailIsValid(email);
+    const isPasswordValid = passwordIsValid(password);
+  
+    if (!isEmailValid || !isPasswordValid) {
+      return res
+        .status(400)
+        .json({ message: `email or password  does not contain the required elements` });
+    } 
 
     const pw = await  bcrypt.hash(password, 10)
     const user = await UserDAO.updateUser({ id,
                                             name, 
                                             first_name, 
                                             email, 
-                                            password : pw, 
-                                            image 
+                                            password : pw
                                           });
   
     if (!user) {
       return res.status(404).json({ message: `User with id ${id} not found` });
-    }
-  
-    const validate_email = emailIsValid(email);
-    const validate_password = passwordIsValid(password);
-  
-    if (!validate_email) {
-      return res.status(400).json({ message: `Email is invalid` });
-    }
-  
-    if (!validate_password) {
-      return res.status(400).json({ message: `Password is invalid` });
     }
   
     const token = jwtSign(user);
@@ -136,6 +129,8 @@ const dltUser = async (req,res)=>{
 
 // All user
 const read = async (req, res) => {
+  const { token, userId } = req.body;
+	console.log(token);
   try {
     const users = await UserDAO.readAll();
     res.status(200).json({ data:users});
@@ -146,17 +141,48 @@ const read = async (req, res) => {
 
 
 // User By ID
-const getUserInfos = async (req, res) => {
-  const { userId } = req.body;
 
-  try {
-    const user = await UserDAO.readById(userId);
-    if (!user) return res.status(400).json({ message: `can't retrieve user` });
-    res.status(200).json({data: user, token});
-  } catch (e) {
-    res.status(500).json({ message: "internal_server_error" });
-  }
-};
+
+
+  const getUserInfos = async (req, res) => {
+    const id = req.params.id;
+  
+    try {
+      const user = await UserDAO.readById(id);
+  
+      if (!user) {
+        return res.status(404).json({ message: "User non trouvé." });
+      }
+  
+  
+  
+      res.status(200).json({ user });
+    } catch (error) {
+      console.error(
+        `Erreur lors de la récupération des informations de l'utilisateur : ${error}`
+      );
+      res.status(500).json({
+        message: `Erreur lors de la récupération des informations de l'utilisateur : ${error.message}`,
+      });
+    }
+  };
+
+  const checkToken = async (req, res) => {
+    try {
+      // Get the user ID from the authenticated request
+      const userId = req.user.id;
+  
+      // Use the UserController to retrieve information about the user
+      const user = await UserController.getUserById(userId);
+  
+      // Return the user information as a JSON object
+      res.json(user);
+    } catch (err) {
+      // Handle any errors that occur during the request
+      console.error(err);
+      res.status(500).json({ error: 'An error occurred' });
+    }
+  };
 
 export const UserController = {
   signUp,
@@ -165,4 +191,5 @@ export const UserController = {
   read,
   signIn,
   getUserInfos,
+  checkToken
 };

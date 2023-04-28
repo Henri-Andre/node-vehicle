@@ -4,8 +4,7 @@ export const formatUser = (user) => {
       name: user.name,
       first_name: user.first_name,
       email: user.email,
-      password: user.password,
-      image : user.image
+      password: user.password
     };
   };
   

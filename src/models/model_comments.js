@@ -1,10 +1,12 @@
 import { DataTypes } from "sequelize";
-import connexion from "../config/database.config.js";
 import User from "./model_user.js";
 import Vehicles from "./model_vehicles.js";
+import initDb from '../config/database.config.js';
+
+const db = await initDb() 
 
 
-const Comments = connexion.db.define('Comments', {
+const Comments = db.define('Comments', {
     id : {
         type : DataTypes.INTEGER,
         primaryKey: true,
@@ -30,9 +32,6 @@ Comments.belongsTo(User,
     { foreignKey: 'user_id' 
 });
 
-User.hasMany(Comments,
-      { foreignKey: 'user_id' 
-});
 
 
 
@@ -41,9 +40,7 @@ Comments.belongsTo(Vehicles,
     { foreignKey: 'vehicle_id' 
 });
 
-Vehicles.hasMany(Comments,
-      { foreignKey: 'vehicle_id' 
-});
+
 
 
 export default Comments;

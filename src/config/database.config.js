@@ -1,46 +1,27 @@
 import { Sequelize } from "sequelize";
 
-class Connection {
-     db = null;
-
-    async connect() {
-        if (!!this.db) {
-            return;
-        } 
-
-        try {
-            this.db = new Sequelize(
-                'popcars',
-                'root',
-                '', 
+const sequelize = new Sequelize(
+                'vehicles',
+                "root",
+                "",
                 {
-                    host : 'localhost',
-                    dialect : 'mariadb',
-                    logging : false
-                })
-
-            await this.db.authenticate()
-                .then(_ => console.log('Connexion à la base de données réussie'))
-                .catch(error => console.error('Erreur de synchronisation', error));
-
-   
+                    host: "localhost",
+                    dialect: "mariadb",
+                    logging: false,
+                }
+            );
             
-
-        } catch (error) {
-            console.error(error)
-        }
-    };
-
-    async sync(){
-    await this.db.sync(
-       //{force:true}
-    )
-
-    }
-}
-
-const connexion = new Connection();
-connexion.connect();
-
-
-export default connexion; 
+            const initDb = async () => {
+                try {
+                    await sequelize.authenticate();
+                    await sequelize.sync({
+                        //force : true
+                    });
+                    console.log("La connexion a la bdd a réussi");
+                } catch (error) {
+                    console.error(error);
+                }
+                return sequelize;
+            };
+            
+            export default initDb;

@@ -1,17 +1,18 @@
 import { Router } from "express";
-import { jwtMiddleware } from "../middlewares/jwt.middleware.js";
 import { UserController } from "../controllers/user.controller.js";
+import { jwtMiddleware } from "../middlewares/jwt.middleware.js";
 
-const initUsersRoutes = (app) => {
+const initUsersRoutes = (app, sm) => {
   const router = Router();
-  router.get("/read", UserController.read);
-  router.put("/update/:id", UserController.update)
-  router.post("/sign-up", UserController.signUp);
-  router.post("/sign-in", UserController.signIn);
-  router.delete("/delete/:id", UserController.dltUser);
-  router.get("/check-token", jwtMiddleware,  UserController.getUserInfos);
-
+  router.get("/readAll", sm,UserController.read);
+  router.get("/readById/:id", sm,  UserController.getUserInfos);
+  router.put("/update/:id", sm, UserController.update)
+  router.post("/sign-up", sm, UserController.signUp);
+  router.post("/sign-in", sm, UserController.signIn);
+  router.delete("/delete/:id",jwtMiddleware, sm, UserController.dltUser);
+  router.get("/check-token",jwtMiddleware, sm, UserController.checkToken);
   app.use("/users", router);
 };
 
 export default initUsersRoutes;
+ 

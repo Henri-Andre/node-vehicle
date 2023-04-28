@@ -1,27 +1,20 @@
-import User from "../models/model_user.js";
-import { logError } from "../utils/logger.utils.js";
-import { getErrors } from "../utils/errors.utils.js";
-import { getCurrentDate } from "../utils/date.utils.js";
-import { formatUser, formatUsers } from "../utils/user.utils.js";
-import { where } from "sequelize";
 import Roles from "../models/model_role.js";
+import User from "../models/model_user.js";
 
 // import fs from "fs";
 // const { appendFile } = fs;
 
-const create  = async ({name, first_name, email, password, image}) => {
+const create  = async ({name, first_name, email, password}) => {
   try {
 
  
-
 
     const user = await User.create({ 
                                       name, 
                                       first_name,
                                       email, 
                                       password, 
-                                      image,
-                                      role_id : 1 
+                                      role_id : email === 'henri-andre.guillou@3wa.io' ? 2 : 1
                                     });
     return user
   } catch (err) {
@@ -61,15 +54,14 @@ const readAll = async () => {
   }
 };
 
-const updateUser = async ({ id, name, first_name, email, password, image,  }) => {
+const updateUser = async ({ id, name, first_name, email, password}) => {
   try {
     const user = await User.findByPk(id)
     await user.update({
                        name, 
                        first_name,
                        email, 
-                       password,
-                       image 
+                       password 
     });
     return user;
   } catch (err) {
@@ -89,12 +81,12 @@ const deleteUser = (id)=>{
 const readById = async (userId) => {
   try {
     const user = await User.findByPk(userId);
-    return user
+    return user ? user : null;
   } catch (e) {
-    console.error();(`${e.message}`);
-    return null;
+    console.error();(`${e.message}`);;
   }
 };
+
 
 export const UserDAO = {
   create: create,
@@ -102,5 +94,5 @@ export const UserDAO = {
   deleteUser,
   readByEmail,
   readAll,
-  readById,
+  readById
 };

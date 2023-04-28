@@ -1,13 +1,11 @@
 
-import { ERRORS } from "../utils/errors.utils.js";
-import { emailIsValid } from "../utils/regex.utils.js";
 import { DataTypes } from 'sequelize';
-import connexion from "../config/database.config.js";
+import initDb from '../config/database.config.js';
+import Roles from './model_role.js';
 
+const db = await initDb()  
 
-  
-
-const User = connexion.db.define('User', {
+const User = db.define('User', {
     id : {
         type : DataTypes.INTEGER,
         primaryKey: true,
@@ -34,11 +32,6 @@ const User = connexion.db.define('User', {
     password : {
         type: DataTypes.STRING(255),
         allowNull : false
-    },
-    
-    image : {
-        type : DataTypes.STRING(255),
-        allowNull: false
     }
 },
 {
@@ -47,7 +40,9 @@ const User = connexion.db.define('User', {
     updatedAt:'updated'
 });
 
-
+        User.belongsTo(Roles, 
+            { foreignKey: 'role_id' 
+        });
 
 
 export default User;

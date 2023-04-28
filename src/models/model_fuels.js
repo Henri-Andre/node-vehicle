@@ -1,11 +1,13 @@
 import { FUEL_VEHICLE } from '../constante/fuels.constant.js';
 import { DataTypes } from 'sequelize';
-import connexion from "../config/database.config.js";
+import initDb from '../config/database.config.js';
+
+const db = await initDb() 
 
 
   
 
-const Fuels = connexion.db.define('Fuels', {
+const Fuels = db.define('Fuels', {
     id : {
         type : DataTypes.INTEGER,
         primaryKey: true,

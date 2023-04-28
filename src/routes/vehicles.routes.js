@@ -1,12 +1,14 @@
 import { Router } from "express";
 import { VehicleController } from "../controllers/vehicle.controller.js";
-import { jwtMiddleware } from "../middlewares/jwt.middleware.js";
+//import { jwtMiddleware } from "../middlewares/jwt.middleware.js";
 
 const initVehiclesRoutes = (app, sm) => {
   const router = Router();
-  router.post("/add", jwtMiddleware, VehicleController.createVehicle);
-  router.get("/",  VehicleController.readVehicles);
-  router.get("/:id", VehicleController.readVehicleById);
+  router.post("/add",sm, VehicleController.createVehicle);
+  router.get("/all",  VehicleController.readVehicles);
+
+  router.get("/:id",sm, VehicleController.readVehicleById);
+  router.get("/type/:type_id",sm, VehicleController.readVehicleByTypeId);
   app.use("/vehicles", router);
 };
 
