@@ -88,6 +88,21 @@ const create  = async ({vehicle, image, history, price, active, video , fuel_id,
     }
   };
 
+// update active
+
+const update = async ({id, active}) => {
+  try {
+    const vehicle = await Vehicles.findByPk(id)
+    await vehicle.update({
+                    active 
+    });
+    return vehicle;
+  } catch (err) {
+    console.error(`Error updating user: ${err.message}`);
+    return null;
+  }
+};
+
 
 // Delete By ID
 
@@ -102,6 +117,7 @@ export const VehicleDAO = {
     create,
     readAll,
     readById,
+    update,
     dlt,
     readByTypeId
 }

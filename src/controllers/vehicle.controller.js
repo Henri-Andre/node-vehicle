@@ -66,6 +66,26 @@ const readVehicleByTypeId = async (req, res) => {
 };
 
 
+const updateActive = async (req, res) => {
+  const  {id}  = req.params;
+
+ 
+
+  
+  const vehicle = await VehicleDAO.update({
+                                             active : false
+                                        });
+
+  if (!vehicle) {
+    return res.status(404).json({ message: `Vehicle with id ${id} not found` });
+  }
+
+;
+
+  res.json({ message: 'User updated', data: vehicle});
+};
+
+
 
 
 
@@ -79,5 +99,6 @@ export const VehicleController = {
     createVehicle,
     readVehicles,
     readVehicleById,
-    readVehicleByTypeId
+    readVehicleByTypeId,
+    updateActive
 }

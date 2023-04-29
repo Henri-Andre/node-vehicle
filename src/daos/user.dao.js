@@ -57,6 +57,7 @@ const readAll = async () => {
 const updateUser = async ({ id, name, first_name, email, password}) => {
   try {
     const user = await User.findByPk(id)
+    
     await user.update({
                        name, 
                        first_name,

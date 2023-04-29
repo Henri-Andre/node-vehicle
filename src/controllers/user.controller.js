@@ -82,26 +82,33 @@ const signIn = async (req, res) => {
   //modifier un user
   const update = async (req, res) => {
     const { id } = req.params;
-    const { name, first_name, email, password} = req.body;
+    const { name, first_name, email} = req.body;
+    const password = req.body.password
 
    
-  
-    
-    const isEmailValid = emailIsValid(email);
-    const isPasswordValid = passwordIsValid(password);
+   
+      const isEmailValid = emailIsValid(email);
+      const isPasswordValid = passwordIsValid(password);
   
     if (!isEmailValid || !isPasswordValid) {
       return res
         .status(400)
         .json({ message: `email or password  does not contain the required elements` });
-    } 
+    }
+    
+    
+
+    
+
+    
+    
 
     const pw = await  bcrypt.hash(password, 10)
     const user = await UserDAO.updateUser({ id,
                                             name, 
                                             first_name, 
-                                            email, 
-                                            password : pw
+                                            email,
+                                            password : pw 
                                           });
   
     if (!user) {
