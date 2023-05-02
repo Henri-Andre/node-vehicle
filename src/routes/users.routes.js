@@ -10,7 +10,7 @@ const initUsersRoutes = (app, sm) => {
   router.post("/sign-up", sm, UserController.signUp);
   router.post("/sign-in", sm, UserController.signIn);
   router.delete("/delete/:id",jwtMiddleware, sm, UserController.dltUser);
-  router.get("/check-token",jwtMiddleware, sm, UserController.checkToken);
+  router.get("/check-token",jwtMiddleware, sm, UserController.getUserInfos);
   app.use("/users", router);
 };
 

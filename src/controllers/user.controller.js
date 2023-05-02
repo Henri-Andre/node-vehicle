@@ -1,9 +1,10 @@
 import bcrypt from "bcrypt";
+import pkg from 'jsonwebtoken';
+import { secret } from "../config/jwt.config.js";
 import { UserDAO } from "../daos/user.dao.js";
 import { jwtSign } from "../utils/jwt.utils.js";
 import { emailIsValid, passwordIsValid } from "../utils/regex.utils.js";
 import { stringIsFilled } from "../utils/string.utils.js";
-
 
 
 
@@ -59,6 +60,7 @@ const signUp = async (req, res) => {
 
 const signIn = async (req, res) => {
   const {email,password} = req.body;
+  const { Jwt } = pkg;
 
   if (!stringIsFilled(email) || !stringIsFilled(password)) {
     return res.status(404).json({ message: "email or password is not correct" });
@@ -174,22 +176,7 @@ const read = async (req, res) => {
     }
   };
 
-  const checkToken = async (req, res) => {
-    try {
-      // Get the user ID from the authenticated request
-      const userId = req.user.id;
-  
-      // Use the UserController to retrieve information about the user
-      const user = await UserController.getUserById(userId);
-  
-      // Return the user information as a JSON object
-      res.json(user);
-    } catch (err) {
-      // Handle any errors that occur during the request
-      console.error(err);
-      res.status(500).json({ error: 'An error occurred' });
-    }
-  };
+;
 
 export const UserController = {
   signUp,
@@ -197,6 +184,5 @@ export const UserController = {
   dltUser,
   read,
   signIn,
-  getUserInfos,
-  checkToken
+  getUserInfos
 };
